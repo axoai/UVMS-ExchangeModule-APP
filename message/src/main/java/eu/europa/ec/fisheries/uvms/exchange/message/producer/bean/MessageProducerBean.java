@@ -36,6 +36,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
 import javax.jms.*;
 
+//TODO: TX handling is broken
 @Stateless
 public class MessageProducerBean implements MessageProducer, ConfigMessageProducer {
 
@@ -74,6 +75,12 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendMessageOnQueue(String text, MessageQueue queue) throws ExchangeMessageException {
+        return sendMessageOnQueue(text, queue, null);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendMessageOnQueue(String text, MessageQueue queue, String jmsXGroupId) throws ExchangeMessageException {
 
         Connection connection = null;
         try {
@@ -81,6 +88,9 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
             final Session session = JMSUtils.connectToQueue(connection);
 
             TextMessage message = session.createTextMessage();
+            if(jmsXGroupId != null) {
+                message.setStringProperty("JMSXGroupID", jmsXGroupId);
+            }
             message.setJMSReplyTo(responseQueue);
             message.setText(text);
 

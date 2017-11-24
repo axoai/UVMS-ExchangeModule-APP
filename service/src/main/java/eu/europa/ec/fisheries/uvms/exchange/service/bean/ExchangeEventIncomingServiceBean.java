@@ -185,6 +185,7 @@ public class ExchangeEventIncomingServiceBean implements ExchangeEventIncomingSe
     public void processMovement(@Observes @SetMovementEvent ExchangeMessageEvent message) {
         try {
             SetMovementReportRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), SetMovementReportRequest.class);
+            String jmsXGroupId = message.getJmsMessage().getStringProperty("JMSXGroupId");
             log.info("Process movement:{}",request);
             String username;
 
@@ -223,7 +224,7 @@ public class ExchangeEventIncomingServiceBean implements ExchangeEventIncomingSe
                 rawMovement.setAckResponseMessageID(message.getJmsMessage().getJMSMessageID());
 
                 String msg = RulesModuleRequestMapper.createSetMovementReportRequest(PluginTypeMapper.map(pluginType), rawMovement, username);
-                forwardToRules(msg, message, service);
+                forwardToRules(msg, message, service, jmsXGroupId);
             } else {
                 log.debug("Validation error. Event sent to plugin {}",message);
             }
@@ -262,6 +263,15 @@ public class ExchangeEventIncomingServiceBean implements ExchangeEventIncomingSe
                 PluginFault fault = ExchangePluginResponseMapper.mapToPluginFaultResponse(FaultCode.EXCHANGE_PLUGIN_EVENT.getCode(), "Message cannot be sent to Rules module [ " + e.getMessage() + " ]");
                 pluginErrorEvent.fire(new PluginMessageEvent(exchangeMessageEvent.getJmsMessage(), service, fault));
             } */
+        }
+    }
+
+    private void forwardToRules(String messageToForward, ExchangeMessageEvent exchangeMessageEvent, ServiceResponseType service, String jmsXGroupId) {
+        try {
+            log.info("Forwarding the msg to rules Module.");
+            producer.sendMessageOnQueue(messageToForward, MessageQueue.RULES, jmsXGroupId);
+        } catch (ExchangeMessageException e) {
+            log.error("Failed to forward message to Rules: {} {}",messageToForward, e);
         }
     }
 

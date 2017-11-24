@@ -25,6 +25,7 @@ import eu.europa.ec.fisheries.uvms.exchange.message.exception.ExchangeMessageExc
 @Local
 public interface MessageProducer {
 
+    public String sendMessageOnQueue(String text, MessageQueue queue, String jmsXGroupId) throws ExchangeMessageException;
     public String sendMessageOnQueue(String text, MessageQueue queue) throws ExchangeMessageException;
 
     public String sendEventBusMessage(String text, String serviceName) throws ExchangeMessageException;
