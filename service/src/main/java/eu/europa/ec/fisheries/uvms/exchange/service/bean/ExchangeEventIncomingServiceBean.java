@@ -185,7 +185,7 @@ public class ExchangeEventIncomingServiceBean implements ExchangeEventIncomingSe
     public void processMovement(@Observes @SetMovementEvent ExchangeMessageEvent message) {
         try {
             SetMovementReportRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), SetMovementReportRequest.class);
-            String jmsXGroupId = message.getJmsMessage().getStringProperty("JMSXGroupId");
+            String jmsXGroupId = message.getJmsMessage().getStringProperty("JMSXGroupID");
             log.info("Process movement:{}",request);
             String username;
 
