@@ -61,7 +61,18 @@
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-monitoring-deps</artifactId>
             <type>pom</type>
-        </dependency>  
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
+            <artifactId>exchange-message</artifactId>
+            <version>4.0.34-UVMS-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
         
     <build>

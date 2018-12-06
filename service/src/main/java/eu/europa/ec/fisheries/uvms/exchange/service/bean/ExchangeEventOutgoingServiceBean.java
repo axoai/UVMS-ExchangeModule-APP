@@ -22,6 +22,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.exchange.message.constants.MessageQueue;
 import org.apache.commons.collections.CollectionUtils;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.AcknowledgeType;
 import eu.europa.ec.fisheries.schema.exchange.common.v1.CommandType;
@@ -428,8 +430,10 @@ public class ExchangeEventOutgoingServiceBean implements ExchangeEventOutgoingSe
             ExchangeLogType updatedLog = exchangeLogService.updateStatus(movementRefType.getAckResponseMessageID(), statusType);
             updatedLog.getTypeRef().setRefGuid(movementRefType.getMovementRefGuid());
             updatedLog.setTypeRefType(TypeRefType.valueOf(movementRefType.getType().value()));
+
+            producer.sendMessageOnQueue("Incoming movement done: " + request.getMovementRefType(), MessageQueue.SALES);
             
-        } catch (ExchangeLogException | ExchangeModelMarshallException e) {
+        } catch (ExchangeLogException | ExchangeModelMarshallException | ExchangeMessageException e) {
             log.error(e.getMessage());
         }
     }

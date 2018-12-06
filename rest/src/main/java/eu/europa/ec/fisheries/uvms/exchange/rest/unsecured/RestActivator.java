@@ -30,6 +30,7 @@ public class RestActivator extends Application {
 
     public RestActivator() {
         set.add(ExchangeAPIResource.class);
+        set.add(SSERestResource.class);
         LOG.info(RestConstants.MODULE_NAME + " unsecured rest API starting up");
     }
 
